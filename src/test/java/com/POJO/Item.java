@@ -1,9 +1,11 @@
 package com.POJO;
 
 public class Item {
-    private String sku;
+    private String createdAt;
     private String description;
     private String price;
+    private String sku;
+    private String updatedAt;
 
     public Item(String sku, String description, String price) {
         this.sku = sku;
@@ -35,12 +37,22 @@ public class Item {
         this.price = price;
     }
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
     @Override
     public String toString() {
-        return "CreateItem{" +
-                "sku='" + sku + '\'' +
+        return "Item{" +
+                "createdAt='" + createdAt + '\'' +
                 ", description='" + description + '\'' +
                 ", price='" + price + '\'' +
+                ", sku='" + sku + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
                 '}';
     }
 }
