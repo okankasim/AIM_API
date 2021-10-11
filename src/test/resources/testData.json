@@ -1,0 +1,5 @@
+{
+  "sku": "item-123-4-567",
+  "description": "Item from json file",
+  "price": "99.99"
+}

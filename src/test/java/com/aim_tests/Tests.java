@@ -1,6 +1,7 @@
 package com.aim_tests;
 
 import com.ConfigReader;
+import com.JsonReader;
 import com.POJO.HTTPHeaders;
 import com.POJO.Item;
 import com.POJO.ResponseMetadata;
@@ -143,20 +144,46 @@ public class Tests {
         assertEquals(404, response.statusCode(), "This Item already deleted and should return 404 status code");
     }
 
+    // Following test serializes the reponse object with help of SKUItem class
+    // and the deserializes data and makes a post/update request with updated data
     @Test
-    public void getGivenSKUItem(){
+    public void getGivenSKUItemAndUpdate(){
         Response response = RestAssured.given().when().get(ConfigReader.getEnvProperty("uri") + "skus/" + "f6adb84e-c273-4b15-b180-f30803sait44");
         SKUItem skuItem = response.as(SKUItem.class);
         System.out.println(skuItem);
         String server = skuItem.getResponseMetadata().getHTTPHeaders().getServer();
         System.out.println(server);
-//        System.out.println(skuItem.getResponseMetadata());
-        Item item = new Item( skuItem.getItem().getSku(), skuItem.getItem().getDescription(), skuItem.getItem().getPrice());
+        Item item = new Item( skuItem.getItem().getSku(), skuItem.getItem().getDescription(), "55.66");
         Response res2  = RestAssured.given().body(item).when().post(ConfigReader.getEnvProperty("uri") + "skus");
         System.out.println(res2.statusCode());
         System.out.println(res2.jsonPath().prettyPeek());
         System.out.println(res2.prettyPeek());
         System.out.println(res2.contentType());
-//        String path = "src/test/resources/test.json";
+    }
+    @Test
+    public void practiceNewSKUItem() {
+        Item item = new Item( "SKUItem123", "deserialize and serialize item", "55.66");
+        Response res  = RestAssured.given().body(item).when().post(ConfigReader.getEnvProperty("uri") + "skus");
+        Item item2 = res.as(Item.class);
+        System.out.println(item2);
+        Response res2= RestAssured.given().when().get(ConfigReader.getEnvProperty("uri") + "skus/" + item2.getSku());
+        res2.prettyPrint();
+        SKUItem skuItem = res2.as(SKUItem.class);
+        Assert.assertEquals(skuItem.getItem().getSku(), "SKUItem123");
+        Assert.assertEquals(res2.statusCode(), 200);
+        Assert.assertEquals(res2.contentType(), "application/json");
+    }
+    @Test
+    public void createAnItemFromJsonFile(){
+        String path = "src/test/resources/testData.json";
+        Item item = JsonReader.getItemFromJsonFile(path);
+        Response res  = RestAssured.given().body(item).when().post(ConfigReader.getEnvProperty("uri") + "skus");
+        Item item2 = res.as(Item.class);
+        res.prettyPrint();
+        Assert.assertEquals(res.statusCode(), 200);
+        Assert.assertEquals(res.contentType(), "application/json");
+        Assert.assertEquals(item2.getPrice(), "99.99");
+        Assert.assertEquals(item2.getDescription(), "Item from json file");
+        Assert.assertEquals(item2.getSku(), "item-123-4-567");
     }
 }
